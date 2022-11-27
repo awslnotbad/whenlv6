@@ -30,7 +30,7 @@ background-attachment: fixed;">
 			<div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
 				<div class="layui-card">
 					<div class="layui-card-header">
-						预期进度:
+						预期天数计算:
 					</div>
 					<div class="layui-card-body">
 						<form class="layui-form" lay-filter="formBili">
@@ -59,14 +59,14 @@ background-attachment: fixed;">
 								<label class="layui-form-label">风纪委员S</label>
 								<div class="layui-input-block">
 									<input type="checkbox" lay-filter="checkbox4" name="like[judgeMen]" value="judgeMen"
-										title="月度硬币+20">
+										title="月硬币礼包+30">
 								</div>
 							</div>
 							<div class="layui-form-item">
 								<label class="layui-form-label">每日投币</label>
 								<div class="layui-input-inline">
 									<select name="quiz1" lay-filter="select1">
-										<option value="">预计投币数量</option>
+										<option value="">每日投币</option>
 										<option value="0" selected="">每天白嫖</option>
 										<option value="1">每天一币</option>
 										<option value="2">每天两币</option>
@@ -79,7 +79,7 @@ background-attachment: fixed;">
 							</div>
 							<div class="layui-form-item">
 								<div class="layui-inline">
-									<label class="layui-form-label">拥有硬币</label>
+									<label class="layui-form-label">我的硬币</label>
 									<div class="layui-input-inline">
 										<input type="text" id="yingbi" autocomplete="off" class="layui-input" value="10"
 											oninput="only_number(this,1);" />
@@ -97,7 +97,7 @@ background-attachment: fixed;">
 							</div>
 							<div class="layui-form-item">
 								<div class="layui-inline">
-									<label class="layui-form-label">六级经验</label>
+									<label class="layui-form-label">LV6经验</label>
 									<div class="layui-input-inline">
 										<input type="number" id="sixJingYan" autocomplete="off" class="layui-input"
 											value="28800" oninput="only_number(this,3);" />
@@ -238,7 +238,7 @@ background-attachment: fixed;">
 				//判断是否使用风纪委员的逻辑
 				if (judgeMen) {
 					if (i % 30 === 0) {
-						bi += 20;
+						bi += 30;
 					}
 				}
 				xuYaoJingYan = xuYaoJingYan - num;
