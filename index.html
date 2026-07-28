@@ -1,264 +1,329 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="Access-Control-Allow-Origin" content="*">
-	<title>blibili-lv6计算器</title>
-	<link rel="stylesheet" href="layui/css/layui.css" />
-	<script type="text/javascript" src="layui/layui.js"></script>
-	<style>
-		.layui-card-body {
-			min-height: 300px;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilibili Lv6 计算器</title>
+    <style>
+        /* --- 1. 基础样式与变量 --- */
+        :root {
+            --bili-pink: #fb7299;
+            --bili-pink-hover: #f95d8a;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --bg-page: #f5f7fa;
+            --bg-card: #ffffff;
+            --border-radius: 12px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            /* 背景图 */
+            background-image: url('https://api.paugram.com/wallpaper/?source=gh');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* 背景遮罩，让内容更清晰 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(245, 247, 250, 0.85);
+            z-index: -1;
+        }
+
+        /* --- 2. 卡片容器 --- */
+        .card {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 480px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--bili-pink);
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        /* --- 3. 表单元素 --- */
+        .form-item {
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .form-item:last-child { border-bottom: none; }
+
+        .form-label {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* 复选框美化 */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .checkbox-wrapper input {
+            margin-right: 8px;
+            accent-color: var(--bili-pink); /* 现代浏览器原生复选框颜色 */
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* 下拉框和输入框美化 */
+        select, input[type="text"], input[type="number"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background-color: #fff;
+            transition: all 0.2s;
+            width: 120px;
+        }
+
+        select:focus, input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: var(--bili-pink);
+            box-shadow: 0 0 0 2px rgba(251, 114, 153, 0.2);
+        }
+
+        /* --- 4. 结果展示 --- */
+        .result-box {
+            margin-top: 2rem;
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #fff0f3;
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--bili-pink);
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--bili-pink);
+            line-height: 1;
+        }
+
+        .result-unit {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
+        /* --- 5. 页脚 --- */
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #999;
+        }
+        .footer a { color: var(--bili-pink); text-decoration: none; }
+    </style>
 </head>
-<body background="https:\/\/api.paugram.com\/wallpaper\/?source=gh"no-repeat;
+<body>
 
-style=" background-repeat:no-repeat ;
-background-size:100% 100%;
-background-size: cover;
-background-repeat: no-repeat;
-background-position: 50%;
-background-attachment: fixed;">
-	<div class="layui-fluid" id="LAY-component-grid-all" style="margin-top: 15px;">
-		<div class="layui-row layui-col-space10">
-			<div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
-				</div>
-			</div>
-			<div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
-				<div class="layui-card">
-					<div class="layui-card-header">
-						预期天数计算:
-					</div>
-					<div class="layui-card-body">
-						<form class="layui-form" lay-filter="formBili">
-							<div class="layui-form-item">
-								<label class="layui-form-label">每日登录</label>
-								<div class="layui-input-block">
-									<input type="checkbox" lay-filter="checkbox1" name="like[login]" value="login"
-										title="登录Ｂ站经验+5">
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<label class="layui-form-label">每日观看</label>
-								<div class="layui-input-block">
-									<input type="checkbox" lay-filter="checkbox2" name="like[watch]" value="watch"
-										title="观看视频经验+5">
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<label class="layui-form-label">每日分享</label>
-								<div class="layui-input-block">
-									<input type="checkbox" lay-filter="checkbox3" name="like[share]" value="share"
-										title="分享视频经验+5">
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<label class="layui-form-label">风纪奖励</label>
-								<div class="layui-input-block">
-									<input type="checkbox" lay-filter="checkbox4" name="like[judgeMen]" value="judgeMen"
-										title="月度S级硬币+30">
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<label class="layui-form-label">每日投币</label>
-								<div class="layui-input-inline">
-									<select name="quiz1" lay-filter="select1">
-										<option value="">每日投币</option>
-										<option value="0" selected="">每天白嫖</option>
-										<option value="1">每天一币</option>
-										<option value="2">每天两币</option>
-										<option value="3">每天三币</option>
-										<option value="4">每天四币</option>
-										<option value="5">每天五币</option>
+    <div class="card">
+        <h1>🚀 Lv6 计算器</h1>
+        <p class="subtitle">计算距离成为 Bilibili Lv6 大佬还有多少天</p>
 
-									</select>
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<div class="layui-inline">
-									<label class="layui-form-label">我的硬币</label>
-									<div class="layui-input-inline">
-										<input type="text" id="yingbi" autocomplete="off" class="layui-input" value="10"
-											oninput="only_number(this,1);" />
-									</div>
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<div class="layui-inline">
-									<label class="layui-form-label">当前经验</label>
-									<div class="layui-input-inline">
-										<input type="number" id="thisJingYan" autocomplete="off" class="layui-input"
-											value="0" oninput="only_number(this,2);" />
-									</div>
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<div class="layui-inline">
-									<label class="layui-form-label">六级经验</label>
-									<div class="layui-input-inline">
-										<input type="number" id="sixJingYan" autocomplete="off" class="layui-input"
-											value="28800" oninput="only_number(this,3);" />
-									</div>
-								</div>
-							</div>
-							<div class="layui-form-item">
-								<div class="layui-inline">
-									<label class="layui-form-label">剩余天数</label>
-									<div class="layui-input-block" align="center"
-										style="min-width: 180px;min-height: 90px;">
-										<div style="margin-top: 18px;">
-											<span id="juLiTianShu" style="font-size: 40px;color: #fb7299;">114514</span>
-											<br>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div>
-								<p style="text-align:center">
-									<img style="width:32px;height:32px;margin-bottom:-8px" src="https://moe.blog/content/uploadfile/Links/icp.gov.moe.png">
-     								<a href="https://icp.gov.moe/?keyword=20217478"" target="_blank" data-pjax-state="">
-  								  <span style="color:#ff0000">萌</span><span style="color:#ca7900">I</span><span style="color:#48ab18">C</span><span style="color:#2720ac">P</span><span style="color:#9b17ae">备</span> </a>
-    							 <a href="https://icp.gov.moe/?keyword=20217478" target="_blank" data-pjax-state=""> <span style="color:#ff0000">20</span><span style="color:#ca7900">21</span><span style="color:#48ab18">74</span><span style="color:#2720ac">78</span><span style="color:#f40428">号</span></a>
-								</p>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-	<script>
-		
-		var login = false;
-		var watch = false;
-		var share = false;
-		var judgeMen = false;
-		var touBiShuLiang = 0;
-		var yongYouYingBi = 10;
-		var thisJingYan = 0;
-		var sixJingYan = 28800;
-		layui.use('form', function () {
-			var form = layui.form;
-			var $ = layui.$;
-			form.on('checkbox(checkbox1)', function (data) {
-				console.log(data.elem.checked);
+        <div class="form-group">
+            <!-- 每日任务 -->
+            <div class="form-item">
+                <label class="form-label">每日登录 (+5)</label>
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="checkLogin" checked> 开启
+                </label>
+            </div>
+            <div class="form-item">
+                <label class="form-label">每日观看 (+5)</label>
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="checkWatch" checked> 开启
+                </label>
+            </div>
+            <div class="form-item">
+                <label class="form-label">每日分享 (+5)</label>
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="checkShare"> 开启
+                </label>
+            </div>
+            <div class="form-item">
+                <label class="form-label">风纪委员 (+30/月)</label>
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="checkJudge"> 开启
+                </label>
+            </div>
 
-				login = data.elem.checked;
-				jiSuan();
-			});
-			form.on('checkbox(checkbox2)', function (data) {
-				console.log(data.elem.checked);
+            <!-- 投币设置 -->
+            <div class="form-item">
+                <label class="form-label">每日投币</label>
+                <select id="selectCoin">
+                    <option value="0">每天白嫖</option>
+                    <option value="1">每天一币</option>
+                    <option value="2" selected>每天两币</option>
+                    <option value="3">每天三币</option>
+                    <option value="4">每天四币</option>
+                    <option value="5">每天五币</option>
+                </select>
+            </div>
 
-				watch = data.elem.checked;
-				jiSuan();
-			});
-			form.on('checkbox(checkbox3)', function (data) {
-				console.log(data.elem.checked);
-				share = data.elem.checked;
-				jiSuan();
-			});
-			form.on('checkbox(checkbox4)', function (data) {
-				console.log(data.elem.checked);
-				judgeMen = data.elem.checked;
-				jiSuan();
-			});
-			form.on('select(select1)', function (data) {
-				if (data.value == null || data.value == "") {
-					touBiShuLiang = 0;
-				} else {
-					touBiShuLiang = data.value;
-				}
-				jiSuan();
-			});
-			//				$.ajax({
-			//					//type: "get",
-			//					url: "http://api.bilibili.com/x/web-interface/nav",
-			//					async: true,
-			//					dataType: 'JSONP',
-			//					success: function(data) {
-			//						var da = data.data;
-			//						if(da.isLogin == false) {
-			//							//您的B站未登录无法动态加载数据,请手动输入参数!
-			//							layer.alert('您的B站未登录无法动态加载数据,请手动输入参数!');
-			//						} else {
-			//							document.getElementById("touXiang").src = da.face;
-			//
-			//						}
-			//					}
-			//				});
-		});
-		//输入框，限金额
-		function only_number(obj, type) {
-			//先把非数字的都替换掉，除了数字和.
-			obj.value = obj.value.replace(/[^\d.]/g, "");
-			//必须保证第一个为数字而不是.
-			obj.value = obj.value.replace(/^\./g, "");
-			//保证只有出现一个.而没有多个.
-			obj.value = obj.value.replace(/\.{2,}/g, ".");
-			//保证.只出现一次，而不能出现两次以上
-			obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
-			if (type == 1) {
-				yongYouYingBi = obj.value;
-			} else if (type == 2) {
-				thisJingYan = obj.value;
-			} else if (type == 3) {
-				sixJingYan = obj.value;
-			}
-			jiSuan();
-		}
+            <!-- 基础数据 -->
+            <div class="form-item">
+                <label class="form-label">当前硬币</label>
+                <input type="number" id="inputCoin" value="10" placeholder="硬币数">
+            </div>
+            <div class="form-item">
+                <label class="form-label">当前经验</label>
+                <input type="number" id="inputExp" value="0" placeholder="经验值">
+            </div>
+            <div class="form-item">
+                <label class="form-label">目标经验</label>
+                <input type="number" id="inputTarget" value="28800" placeholder="Lv6经验">
+            </div>
+        </div>
 
-		function jiSuan() {
-			var num = 0;
-			if (login == true || login == "true") {
-				num = num + 5;
-			}
-			if (watch == true || watch == "true") {
-				num = num + 5;
-			}
-			if (share == true || share == "true") {
-				num = num + 5;
-			}
-			console.log("每日基础=" + num);
-			var touBi = (touBiShuLiang * 10);
-			console.log("每日投币=" + touBi);
-			var bi = yongYouYingBi;
-			console.log("拥有硬币=" + touBi);
-			var xuYaoJingYan;
-			if (sixJingYan > thisJingYan) {
+        <!-- 结果区域 -->
+        <div class="result-box">
+            <div class="result-label">预计还需要</div>
+            <div>
+                <span class="result-value" id="resultDays">0</span>
+                <span class="result-unit">天</span>
+            </div>
+        </div>
 
-				xuYaoJingYan = sixJingYan - thisJingYan;
-				//console.log("需要经验值=" + xuYaoJingYan);
-			} else {
-				document.getElementById("juLiTianShu").innerText = 0;
-			}
-			var tian = 0;
-			for (var i = 0; 0 < xuYaoJingYan; i++) {
-				//判断是否使用风纪委员的逻辑
-				if (judgeMen) {
-					if (i % 30 === 0) {
-						bi += 30;
-					}
-				}
-				xuYaoJingYan = xuYaoJingYan - num;
-				if (bi > touBiShuLiang) {
-					//减去每日的投币经验
-					xuYaoJingYan = xuYaoJingYan - touBi;
-					//减去每日的投币经验
-					bi = bi - touBiShuLiang;
-				}
-				bi++;
-				tian = i;
-				if (tian > 10000) {
-					document.getElementById("juLiTianShu").innerText = tian;
-					return;
-				}
-				//					console.log("需要经验值=" + xuYaoJingYan + "当前天数=" + tian);
-			}
+        <div class="footer">
+            <p>
+                <a href="https://icp.gov.moe/?keyword=20217478" target="_blank">
+                    🍭 萌ICP备20217478号
+                </a>
+            </p>
+        </div>
+    </div>
 
-			document.getElementById("juLiTianShu").innerText = tian;
-		}
-		
-	</script>
+    <script>
+        // --- 逻辑部分 ---
+        // 获取所有DOM元素
+        const els = {
+            checkLogin: document.getElementById('checkLogin'),
+            checkWatch: document.getElementById('checkWatch'),
+            checkShare: document.getElementById('checkShare'),
+            checkJudge: document.getElementById('checkJudge'),
+            selectCoin: document.getElementById('selectCoin'),
+            inputCoin: document.getElementById('inputCoin'),
+            inputExp: document.getElementById('inputExp'),
+            inputTarget: document.getElementById('inputTarget'),
+            resultDays: document.getElementById('resultDays')
+        };
 
+        // 绑定事件监听器
+        Object.values(els).forEach(el => {
+            el.addEventListener('input', calculate);
+            el.addEventListener('change', calculate);
+        });
+
+        function calculate() {
+            // 1. 获取基础数值
+            let dailyExp = 0;
+            if (els.checkLogin.checked) dailyExp += 5;
+            if (els.checkWatch.checked) dailyExp += 5;
+            if (els.checkShare.checked) dailyExp += 5;
+
+            const dailyCoins = parseInt(els.selectCoin.value) || 0;
+            const dailyCoinExp = dailyCoins * 10; // 1币 = 10经验
+            
+            let currentCoins = parseInt(els.inputCoin.value) || 0;
+            let currentExp = parseInt(els.inputExp.value) || 0;
+            const targetExp = parseInt(els.inputTarget.value) || 28800;
+            const isJudge = els.checkJudge.checked;
+
+            // 2. 边界检查
+            if (currentExp >= targetExp) {
+                els.resultDays.innerText = "0";
+                return;
+            }
+
+            let days = 0;
+            let remainingExp = targetExp - currentExp;
+
+            // 3. 模拟每一天的过程
+            // 设置一个最大循环次数防止死循环（比如每天经验获取为0的情况）
+            while (remainingExp > 0 && days < 10000) {
+                days++;
+                
+                // 获得基础经验
+                remainingExp -= dailyExp;
+
+                // 处理投币逻辑
+                if (dailyCoins > 0) {
+                    // 硬币足够投
+                    if (currentCoins >= dailyCoins) {
+                        remainingExp -= dailyCoinExp;
+                        currentCoins -= dailyCoins;
+                    } 
+                    // 硬币不足，能投多少投多少
+                    else if (currentCoins > 0) {
+                        remainingExp -= (currentCoins * 10);
+                        currentCoins = 0;
+                    }
+                }
+
+                // 每天自动获得1个硬币
+                currentCoins++;
+
+                // 风纪委员奖励 (每30天)
+                if (isJudge && days % 30 === 0) {
+                    currentCoins += 30;
+                }
+            }
+
+            els.resultDays.innerText = days;
+        }
+
+        // 初始化计算一次
+        calculate();
+    </script>
 </body>
 </html>
