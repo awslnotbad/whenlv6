@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilibili Lv6 计算器</title>
+    <title>Bilibili Lv6等级 计算器</title>
     <style>
-        /* --- 1. 基础样式与变量 --- */
         :root {
             --bili-pink: #fb7299;
             --bili-pink-hover: #f95d8a;
@@ -16,130 +15,188 @@
             --border-radius: 12px;
             --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-page);
             color: var(--text-primary);
             line-height: 1.6;
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 40px 20px;
-            /* 背景图 */
+            padding: clamp(12px, 3vw, 24px);
             background-image: url('https://api.paugram.com/wallpaper/?source=gh');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            overflow: hidden; /* 防止樱花飘落产生滚动条 */
         }
-        /* 背景遮罩，让内容更清晰 */
+
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(245, 247, 250, 0.85);
             z-index: -1;
         }
 
-        /* --- 樱花画布样式 --- */
         #sakura-canvas {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            pointer-events: none; /* 关键：让鼠标事件穿透画布，不影响下方操作 */
-            z-index: 1; /* 层级在背景之上，内容之下 */
+            pointer-events: none;
+            z-index: 1;
         }
 
-        /* --- 2. 卡片容器 --- */
         .card {
             position: relative;
-            z-index: 2; /* 确保卡片在樱花之上 */
+            z-index: 2;
             background: var(--bg-card);
-            width: 100%;
-            max-width: 480px;
+            width: min(90vw, 480px);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            padding: 2rem;
+            padding: clamp(16px, 4vw, 28px);
             animation: fadeIn 0.5s ease-out;
+            margin-top: clamp(8px, 2vw, 16px);
         }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        h1 { text-align: center; color: var(--bili-pink); margin-bottom: 0.5rem; font-size: 1.8rem; }
-        p.subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.9rem; }
 
-        /* --- 3. 表单元素 --- */
+        h1 {
+            text-align: center;
+            color: var(--bili-pink);
+            margin-bottom: 0.3em;
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: clamp(1em, 3vw, 1.8em);
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, 1.5vw, 12px);
+        }
+
         .form-item {
-            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: clamp(6px, 1.5vw, 10px) 0;
             border-bottom: 1px solid #f0f0f0;
+            gap: clamp(8px, 2vw, 16px);
+            flex-wrap: wrap;
         }
+
         .form-item:last-child { border-bottom: none; }
-        .form-label { font-size: 0.95rem; color: var(--text-primary); font-weight: 500; }
-        
-        /* 复选框美化 */
-        .checkbox-wrapper { display: flex; align-items: center; cursor: pointer; }
+
+        .form-label {
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+            color: var(--text-primary);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
         .checkbox-wrapper input {
-            margin-right: 8px;
+            margin-right: clamp(4px, 1vw, 8px);
             accent-color: var(--bili-pink);
-            width: 18px; height: 18px;
+            width: clamp(14px, 3.5vw, 18px);
+            height: clamp(14px, 3.5vw, 18px);
             cursor: pointer;
         }
 
-        /* 下拉框和输入框美化 */
         select, input[type="text"], input[type="number"] {
-            padding: 8px 12px;
+            padding: clamp(5px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
             background-color: #fff;
             transition: all 0.2s;
-            width: 120px;
+            width: clamp(90px, 25vw, 120px);
+            min-width: 0;
         }
+
         select:focus, input[type="text"]:focus, input[type="number"]:focus {
             outline: none;
             border-color: var(--bili-pink);
             box-shadow: 0 0 0 2px rgba(251, 114, 153, 0.2);
         }
 
-        /* --- 4. 结果展示 --- */
         .result-box {
-            margin-top: 2rem;
+            margin-top: clamp(1em, 3vw, 1.8em);
             text-align: center;
-            padding: 1.5rem;
+            padding: clamp(0.8em, 2.5vw, 1.5em);
             background-color: #fff0f3;
             border-radius: var(--border-radius);
             border: 1px dashed var(--bili-pink);
         }
-        .result-label { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
-        .result-value { font-size: 3rem; font-weight: 800; color: var(--bili-pink); line-height: 1; }
-        .result-unit { font-size: 1rem; color: var(--text-secondary); font-weight: normal; }
 
-        /* --- 5. 页脚 --- */
+        .result-label {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            color: var(--text-secondary);
+            margin-bottom: 0.3em;
+        }
+
+        .result-value {
+            font-size: clamp(2rem, 7vw, 3rem);
+            font-weight: 800;
+            color: var(--bili-pink);
+            line-height: 1;
+        }
+
+        .result-unit {
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
         .footer {
-            margin-top: 2rem;
+            margin-top: clamp(1em, 3vw, 1.8em);
             text-align: center;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
             color: #999;
         }
-        .footer a { color: var(--bili-pink); text-decoration: none; }
+
+        .footer a {
+            color: var(--bili-pink);
+            text-decoration: none;
+        }
+
+        /* 超小屏兜底：确保表单项不会挤在一起 */
+        @media (max-width: 360px) {
+            .form-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            select, input[type="text"], input[type="number"] {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- 樱花画布 -->
     <canvas id="sakura-canvas"></canvas>
 
     <div class="card">
         <h1>🌸 Lv6 计算器</h1>
         <p class="subtitle">计算距离成为 Bilibili Lv6 大佬还有多少天</p>
         <div class="form-group">
-            <!-- 每日任务 -->
             <div class="form-item">
                 <label class="form-label">每日登录 (+5)</label>
                 <label class="checkbox-wrapper">
@@ -164,7 +221,6 @@
                     <input type="checkbox" id="checkJudge"> 开启
                 </label>
             </div>
-            <!-- 投币设置 -->
             <div class="form-item">
                 <label class="form-label">每日投币</label>
                 <select id="selectCoin">
@@ -176,7 +232,6 @@
                     <option value="5">每天五币</option>
                 </select>
             </div>
-            <!-- 基础数据 -->
             <div class="form-item">
                 <label class="form-label">当前硬币</label>
                 <input type="number" id="inputCoin" value="10" placeholder="硬币数">
@@ -190,7 +245,6 @@
                 <input type="number" id="inputTarget" value="28800" placeholder="Lv6经验">
             </div>
         </div>
-        <!-- 结果区域 -->
         <div class="result-box">
             <div class="result-label">预计还需要</div>
             <div>
@@ -204,13 +258,10 @@
     </div>
 
     <script>
-        // --- 樱花飘落特效逻辑 ---
         const canvas = document.getElementById('sakura-canvas');
         const ctx = canvas.getContext('2d');
-        let width, height;
-        let particles = [];
+        let width, height, particles = [];
 
-        // 设置画布尺寸
         function resize() {
             width = window.innerWidth;
             height = window.innerHeight;
@@ -220,129 +271,84 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // 樱花类
         class Sakura {
-            constructor() {
-                this.reset();
-            }
+            constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * width;
-                this.y = Math.random() * -height; // 从屏幕上方随机位置开始
-                this.size = Math.random() * 15 + 10; // 大小 10-25px
-                this.speed = Math.random() * 1 + 0.5; // 下落速度
-                this.wind = Math.random() * 1 - 0.5; // 水平飘动
+                this.y = Math.random() * -height;
+                this.size = Math.random() * 15 + 10;
+                this.speed = Math.random() * 2 + 1;
+                this.wind = Math.random() * 2 - 1;
+                this.opacity = Math.random() * 0.5 + 0.3;
                 this.rotation = Math.random() * 360;
                 this.rotationSpeed = Math.random() * 2 - 1;
-                this.opacity = Math.random() * 0.5 + 0.3; // 透明度
             }
             update() {
                 this.y += this.speed;
                 this.x += this.wind;
                 this.rotation += this.rotationSpeed;
-                // 如果超出屏幕底部或左右边缘，重置到顶部
-                if (this.y > height || this.x < -50 || this.x > width + 50) {
-                    this.reset();
-                    this.y = -20;
-                }
+                if (this.y > height) { this.reset(); this.y = -20; }
             }
             draw() {
                 ctx.save();
+                ctx.globalAlpha = this.opacity;
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation * Math.PI / 180);
-                ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = '#ffb7c5'; // 樱花粉色
+                ctx.fillStyle = '#ffb7c5';
                 ctx.beginPath();
-                // 绘制一个简单的五瓣花形状
-                for (let i = 0; i < 5; i++) {
-                    ctx.moveTo(0, 0);
-                    ctx.lineTo(0, -this.size);
-                    ctx.arc(0, -this.size, this.size / 2, 0, Math.PI * 2);
-                    ctx.rotate(Math.PI * 2 / 5);
-                }
+                ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.restore();
             }
         }
 
-        // 初始化樱花
-        function initSakura() {
+        function initParticles(num) {
             particles = [];
-            const count = Math.floor(width / 20); // 根据屏幕宽度决定樱花数量
-            for (let i = 0; i < count; i++) {
-                particles.push(new Sakura());
-            }
+            for (let i = 0; i < num; i++) particles.push(new Sakura());
         }
 
-        // 动画循环
         function animate() {
             ctx.clearRect(0, 0, width, height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
+            particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animate);
         }
 
-        initSakura();
+        initParticles(30);
         animate();
 
-        // --- 原有逻辑部分 ---
-        const els = {
-            checkLogin: document.getElementById('checkLogin'),
-            checkWatch: document.getElementById('checkWatch'),
-            checkShare: document.getElementById('checkShare'),
-            checkJudge: document.getElementById('checkJudge'),
-            selectCoin: document.getElementById('selectCoin'),
-            inputCoin: document.getElementById('inputCoin'),
-            inputExp: document.getElementById('inputExp'),
-            inputTarget: document.getElementById('inputTarget'),
-            resultDays: document.getElementById('resultDays')
-        };
+        const checkLogin = document.getElementById('checkLogin');
+        const checkWatch = document.getElementById('checkWatch');
+        const checkShare = document.getElementById('checkShare');
+        const checkJudge = document.getElementById('checkJudge');
+        const selectCoin = document.getElementById('selectCoin');
+        const inputCoin = document.getElementById('inputCoin');
+        const inputExp = document.getElementById('inputExp');
+        const inputTarget = document.getElementById('inputTarget');
+        const resultDays = document.getElementById('resultDays');
 
-        Object.values(els).forEach(el => {
+        function calculate() {
+            let dailyExp = 0;
+            if (checkLogin.checked) dailyExp += 5;
+            if (checkWatch.checked) dailyExp += 5;
+            if (checkShare.checked) dailyExp += 5;
+            if (checkJudge.checked) dailyExp += 1;
+            dailyExp += parseInt(selectCoin.value);
+
+            const currentExp = parseInt(inputExp.value) || 0;
+            const targetExp = parseInt(inputTarget.value) || 0;
+            const remainingExp = targetExp - currentExp;
+
+            if (remainingExp <= 0) { resultDays.innerText = "0"; return; }
+            if (dailyExp <= 0) { resultDays.innerText = "∞"; return; }
+
+            resultDays.innerText = Math.ceil(remainingExp / dailyExp);
+        }
+
+        document.querySelectorAll('input, select').forEach(el => {
             el.addEventListener('input', calculate);
             el.addEventListener('change', calculate);
         });
 
-        function calculate() {
-            let dailyExp = 0;
-            if (els.checkLogin.checked) dailyExp += 5;
-            if (els.checkWatch.checked) dailyExp += 5;
-            if (els.checkShare.checked) dailyExp += 5;
-            const dailyCoins = parseInt(els.selectCoin.value) || 0;
-            const dailyCoinExp = dailyCoins * 10;
-            let currentCoins = parseInt(els.inputCoin.value) || 0;
-            let currentExp = parseInt(els.inputExp.value) || 0;
-            const targetExp = parseInt(els.inputTarget.value) || 28800;
-            const isJudge = els.checkJudge.checked;
-
-            if (currentExp >= targetExp) {
-                els.resultDays.innerText = "0";
-                return;
-            }
-
-            let days = 0;
-            let remainingExp = targetExp - currentExp;
-
-            while (remainingExp > 0 && days < 10000) {
-                days++;
-                remainingExp -= dailyExp;
-                if (dailyCoins > 0) {
-                    if (currentCoins >= dailyCoins) {
-                        remainingExp -= dailyCoinExp;
-                        currentCoins -= dailyCoins;
-                    } else if (currentCoins > 0) {
-                        remainingExp -= (currentCoins * 10);
-                        currentCoins = 0;
-                    }
-                }
-                currentCoins++;
-                if (isJudge && days % 30 === 0) {
-                    currentCoins += 30;
-                }
-            }
-            els.resultDays.innerText = days;
-        }
         calculate();
     </script>
 </body>
